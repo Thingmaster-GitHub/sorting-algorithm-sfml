@@ -1,2 +1,2 @@
 # sorting-algorithm-sfml
-a sorting algorith in sfml
+a sorting algorithm in sfml
