@@ -4,8 +4,9 @@
 #include <limits>
 #include <SFML/Graphics.hpp>
 #include <bits/stdc++.h>
-float W = 600, H = 600;
-int size=50;
+
+float W = 1366, H = 768;
+int size=100;
 unsigned int frameCount = 0;
 float avg;
 std::vector<int> arr;
@@ -23,7 +24,7 @@ class game{
 
             sf::ContextSettings settings;
             settings.antiAliasingLevel = 16.0;
-            sf::RenderWindow window(sf::VideoMode({W, H}), "sort", sf::Style::Default,sf::State::Windowed,  settings);
+            sf::RenderWindow window(sf::VideoMode({W, H}), "sort", sf::Style::Default,sf::State::Fullscreen,  settings);
 
             //window.setFramerateLimit(240);
 
@@ -53,7 +54,7 @@ class game{
 
                     window.clear(sf::Color::Black);
 
-                    backwardsSort();
+                    bublesort();
 
 
                     displayBars(window);
@@ -86,16 +87,18 @@ class game{
     private:
         void avgArr(){
             avg=(avg*9+frameCount)/10;
-            std::cout<<avg<<" : "<<frameCount<<"\n";
+            //std::cout<<avg<<" : "<<frameCount<<"\n";
         }
         void newList(){
             size*=2;
             //600
+            /*
             if(size>600){
                 size=600;
-            }
+            }*/
             fillVect(size);
             randomizeVect();
+            std::cout<<size<<"\n";
 
         }
         bool check(sf::RenderWindow& window){
@@ -159,11 +162,19 @@ class game{
 
             float width, height;
             width =W/arr.size();
-            for(auto i : arr){
-                height =(H/arr.size())*(arr[i]+1);
-                sf::RectangleShape shape(sf::Vector2f(width,height));
-                shape.setPosition({width*i,H-height});
-                window.draw(shape);
+            sf::RectangleShape shape(sf::Vector2f(1,1));
+            for(int i=0;i<W;i++){
+                for(int iP=0;iP<H;iP++){
+                    shape.setPosition({i,iP});
+                    //should only check certain range
+                    for(int l=arr.size()/W*i;l<arr.size()/W*(i+1);l++){
+                        height =(H/arr.size())*(arr[l]+1);
+                        if(!(i<width*l||i>width*(l+1)||iP<H-height||iP>H)){
+                            window.draw(shape);
+                        }
+
+                    }
+                }
             }
         }
 
@@ -207,7 +218,7 @@ class game{
                 }
             }
 
-            std::cout<<perRight*100<<"%\n";
+            //std::cout<<perRight*100<<"%\n";
 
 
         }
@@ -240,7 +251,7 @@ class game{
                 }
             }
 
-            std::cout<<perRight*100<<"%\n";
+            //std::cout<<perRight*100<<"%\n";
 
 
         }
