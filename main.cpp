@@ -10,6 +10,7 @@ float W = 1366, H = 768;
 int size=1000000;
 unsigned int frameCount = 0;
 float avg;
+bool runOther = false;
 std::vector<int> arr;
 class game{
     public:
@@ -55,7 +56,7 @@ class game{
 
                     window.clear(sf::Color::Black);
 
-                    bublesort();
+                    sortRandom();
 
 
                     displayBars(window);
@@ -123,13 +124,7 @@ class game{
 
                     window.draw(rect);
 
-
-                    window.display();
-
-
-
-
-                    window.display();
+                    //window.display();
 
 
                 }else{
@@ -163,12 +158,11 @@ class game{
 
             float width, height;
             width =W/arr.size();
-            sf::RectangleShape shape(sf::Vector2f(1,1));
+            sf::RectangleShape rect(sf::Vector2f(width,height));
             for(int i=0;i<arr.size();i++){
 
 
-                    sf::RectangleShape rect(sf::Vector2f(width,height));
-                    sf::RectangleShape shape(sf::Vector2f(W,H));
+
                     height =(H/arr.size())*(arr[i]+1);
 
 
@@ -205,27 +199,29 @@ class game{
         void sortRandom(){
             float upCalc =0;
 
-            for(auto i : arr){
-                srand(time(0));
-                int iP = i+(rand() % (arr.size()-i));
-                int iL = arr.size()-iP;
-                //std::cout<<iP<<" : "<<iL<<" : "<<i<<"\n";
-                if(arr[i]>arr[iP]&&i<iP){
-                    std::swap(arr[i],arr[iP]);
-                }else if(arr[i]<arr[iL]&&i>iL){
-                    std::swap(arr[i],arr[iL]);
-                }else{
-                    upCalc++;
-                }
+            if(!runOther){
+                for(auto i : arr){
+                    srand(time(0));
+                    int iP = i+(rand() % (arr.size()-i));
+                    int iL = arr.size()-iP;
+                    //std::cout<<iP<<" : "<<iL<<" : "<<i<<"\n";
+                    if(arr[i]>arr[iP]&&i<iP){
+                        std::swap(arr[i],arr[iP]);
+                    }else if(arr[i]<arr[iL]&&i>iL){
+                        std::swap(arr[i],arr[iL]);
+                    }else{
+                        upCalc++;
+                    }
 
-            }
-            float perRight = upCalc/arr.size();
-
-            if(perRight>=0.999){
-                for(int i=1;i<arr.size();i++){
-                    if(arr[i]<arr[i-1])
-                        std::swap(arr[i],arr[i-1]);
                 }
+                float perRight = upCalc/arr.size();
+
+                if(perRight>=0.9){
+                    runOther=true;
+                    std::cout<<"mode Switched!\n";
+                }
+            }else{
+                straightInsertionSort();
             }
 
             //std::cout<<perRight*100<<"%\n";
@@ -266,6 +262,13 @@ class game{
 
         }
 
+        void straightInsertionSort(){
+            for(auto i : arr){
+                for(int j=i;j>0&&arr[j-1]>arr[j];j--){
+                    std::swap(arr[j],arr[j-1]);
+                }
+            }
+        }
 };
 
 
