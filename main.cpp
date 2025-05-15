@@ -3,10 +3,11 @@
 #include <cmath>
 #include <limits>
 #include <SFML/Graphics.hpp>
+using namespace sf;
 #include <bits/stdc++.h>
 
 float W = 1366, H = 768;
-int size=100;
+int size=1000000;
 unsigned int frameCount = 0;
 float avg;
 std::vector<int> arr;
@@ -163,18 +164,27 @@ class game{
             float width, height;
             width =W/arr.size();
             sf::RectangleShape shape(sf::Vector2f(1,1));
-            for(int i=0;i<W;i++){
-                for(int iP=0;iP<H;iP++){
-                    shape.setPosition({i,iP});
-                    //should only check certain range
-                    for(int l=arr.size()/W*i;l<arr.size()/W*(i+1);l++){
-                        height =(H/arr.size())*(arr[l]+1);
-                        if(!(i<width*l||i>width*(l+1)||iP<H-height||iP>H)){
-                            window.draw(shape);
-                        }
+            for(int i=0;i<arr.size();i++){
 
-                    }
-                }
+
+                    sf::RectangleShape rect(sf::Vector2f(width,height));
+                    sf::RectangleShape shape(sf::Vector2f(W,H));
+                    height =(H/arr.size())*(arr[i]+1);
+
+
+                    rect.setSize(sf::Vector2f(width, height));
+                    rect.setPosition({width*i,H-height});
+
+                    window.draw(rect);
+
+
+
+
+
+
+
+
+
             }
         }
 
