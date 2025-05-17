@@ -1,17 +1,23 @@
 
 #include <iostream>
+
 #include <cmath>
 #include <limits>
 #include <SFML/Graphics.hpp>
-using namespace sf;
+
 #include <bits/stdc++.h>
+
+int threadsNumGlobal = 64;
+int ch=0;
 
 float W = 1366, H = 768;
 int size=1000000;
 unsigned int frameCount = 0;
 float avg;
-bool runOther = false;
+
 std::vector<int> arr;
+int mode=0;
+int bestNum=0;
 class game{
     public:
 
@@ -50,21 +56,23 @@ class game{
 
 
                     done=true;
+                    mode=0;
+                    threadsNumGlobal=64;
                 }
                 if(!done){
                     //window.clear(sf::Color::Black);
 
                     window.clear(sf::Color::Black);
 
+                    //sorting
                     sortRandom();
-
+                    //straightInsertionSortThread(3,8);
 
                     displayBars(window);
 
-                    window.display();
                     frameCount++;
 
-                    //sorting
+
 
 
 
@@ -110,6 +118,7 @@ class game{
 
 
 
+            bool nDis=true;
             for(int i=0;i<arr.size();i++){
                 if(i==arr[i]){
 
@@ -124,10 +133,18 @@ class game{
 
                     window.draw(rect);
 
-                    //window.display();
+                    if(bestNum<i){
+                        //window.display();
+                        nDis=false;
+                        bestNum=i;
+                    }
+
 
 
                 }else{
+                    if(nDis){
+                        window.display();
+                    }
                     return false;
 
                 }
@@ -199,7 +216,7 @@ class game{
         void sortRandom(){
             float upCalc =0;
 
-            if(!runOther){
+            if(mode==0){
                 for(auto i : arr){
                     srand(time(0));
                     int iP = i+(rand() % (arr.size()-i));
@@ -217,9 +234,15 @@ class game{
                 float perRight = upCalc/arr.size();
 
                 if(perRight>=0.9){
-                    runOther=true;
+                    mode=true;
                     std::cout<<"mode Switched!\n";
                 }
+            }else if(mode==1){
+                //straightInsertionSort();
+                //straightInsertionSortThread(8,8);
+
+                threadUse(threadsNumGlobal);
+
             }else{
                 straightInsertionSort();
             }
@@ -269,8 +292,32 @@ class game{
                 }
             }
         }
-};
+        void straightInsertionSortThread(int threadNum,int threadCount){
 
+            for(int i=threadNum*(arr.size()/threadCount);i<(threadNum+1)*(arr.size()/threadCount);i++){
+                for(int j=i;j>threadNum*(arr.size()/threadCount)&&arr[j-1]>arr[j];j--){
+                    std::swap(arr[j],arr[j-1]);
+                    ch++;
+                }
+            }
+
+        }
+        void threadUse(int threadCount){
+            ch=0;
+            std::vector<std::thread> threads;
+            for (int i = 0; i < threadCount; ++i) {
+                threads.emplace_back(&game::straightInsertionSortThread,this, i,threadCount);
+            }
+
+            for (auto& thread : threads) {
+                thread.join();
+            }
+            std::cout<<ch<<"\n";
+            if(ch==0){
+                threadsNumGlobal/=2;
+            }
+        }
+};
 
 int main()
 {
